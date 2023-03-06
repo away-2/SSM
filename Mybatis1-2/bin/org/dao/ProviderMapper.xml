@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.dao.ProviderMapper">
+
+   <select id="fromProvider" resultType="Provider">
+       select * from smbms_Provider 
+	</select>
+	<select id="count" resultType="int">
+		select count(1) as count from smbms_provider
+	</select>
+<!-- 单条件模糊查询 -->
+<select id="getListByName" resultType="Provider"
+parameterType="string">
+Select * from smbms_provider where proName like 
+ CONCAT('%',#{proName},'%')
+</select>
+<!-- 多条件查询 -->
+	<select id="getListByAddressAndDesc" resultType="Provider"
+parameterType="Provider">
+Select * from smbms_provider where proAddress like 
+ CONCAT('%',#{proAddress},'%') and proDesc like CONCAT('%',#{proDesc},'%') 
+</select>
+<!-- 自定义查询结果映射 -->
+<resultMap type="Provider" id="productList">
+<result property="proName" column="proName"/>
+<result property="productName" column="productName"/>
+<result property="productDesc" column="productDesc"/>
+</resultMap>
+<select id="getProductListByProvider" resultMap="productList"
+parameterType="String">
+Select proName,productName,productDesc from smbms_provider a ,smbms_bill b where proName like 
+ CONCAT('%',#{proName},'%') and a.id=b.providerId
+</select>
+<insert id="addProvider" parameterType='Provider'>
+insert into smbms_provider (proCode, proName,proDesc, proContact, proPhone,proAddress, proFax, createdBy,creationDate) 
+values(#{proCode}, #{proName},#{proDesc}, #{proContact}, #{proPhone},#{proAddress},#{proFax}, #{createdBy},#{creationDate})
+</insert>
+<delete id="delProvider" parameterType="String">
+ delete from smbms_provider where proName=#{proName}
+</delete>
+<update id="updateProvider">
+ update smbms_provider set proName=#{proName1} where proName=#{proName2} 
+</update>
+<!-- 修改供应商信息 -->
+	
+		<update id="modify" parameterType="Provider">
+		update smbms_provider 
+		 <set>
+         <if test="1 == 1">id=#{id},</if> 
+	 <if test="proCode != null">proCode=#{proCode},</if>
+	<if test="proName != null">proName=#{proName},</if>
+	<if test="proDesc != null">proDesc=#{proDesc},</if>
+	<if test="proContact != null">proContact=#{proContact},</if>
+	<if test="proPhone != null">proPhone=#{proPhone},</if>
+	<if test="proAddress != null">proAddress=#{proAddress},</if>
+	<if test="proFax != null">proFax=#{proFax},</if>
+	<if test="modifyBy != null">modifyBy=#{modifyBy},</if>
+	<if test="modifyDate != null">modifyDate=#{modifyDate}</if>
+	 </set> where id = #{id}	</update>
+
+	
+</mapper>
